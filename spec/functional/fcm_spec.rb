@@ -16,6 +16,8 @@ describe 'FCM' do
     notification.app_id = app.id
     notification.device_token = fake_device_token
     notification.data = { message: 'test' }
+    notification.notification = {title: 'title'}
+    notification.fcm_config = { analytics_label: 'label' }
     notification.save!
 
     allow(Net::HTTP::Persistent).to receive_messages(new: http)
@@ -38,6 +40,7 @@ describe 'FCM' do
     }.to_json
     allow(response).to receive_messages(body: example_success_body)
 
+    puts notification.as_json
     expect do
       Rpush.push
       notification.reload

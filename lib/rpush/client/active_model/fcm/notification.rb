@@ -28,12 +28,12 @@ module Rpush
           # we do a little conversion here.
           def priority=(priority)
             case priority
-              when 'high', FCM_PRIORITY_HIGH
-                super(FCM_PRIORITY_HIGH)
-              when 'normal', FCM_PRIORITY_NORMAL
-                super(FCM_PRIORITY_NORMAL)
-              else
-                errors.add(:priority, 'must be one of either "normal" or "high"')
+            when 'high', FCM_PRIORITY_HIGH
+              super(FCM_PRIORITY_HIGH)
+            when 'normal', FCM_PRIORITY_NORMAL
+              super(FCM_PRIORITY_NORMAL)
+            else
+              errors.add(:priority, 'must be one of either "normal" or "high"')
             end
           end
 
@@ -53,6 +53,8 @@ module Rpush
             }
             json['content_available'] = content_available if content_available
             json['notification'] = notification if notification
+            json['fcm_options'] = fcm_config if fcm_config
+
             { 'message' => json }
           end
 
@@ -68,7 +70,9 @@ module Rpush
           end
 
           def android_notification
-            json = notification || {}
+            return {} unless notification
+
+            json = notification.dup
             json['notification_priority'] = priority_for_notification if priority
             json['sound'] = sound if sound
             json['default_sound'] = !sound || sound == 'default' ? true : false
